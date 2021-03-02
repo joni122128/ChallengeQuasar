@@ -1,0 +1,5 @@
+package com.operacion.quasar.models;
+
+public class SatelliteRequestDto {
+
+}

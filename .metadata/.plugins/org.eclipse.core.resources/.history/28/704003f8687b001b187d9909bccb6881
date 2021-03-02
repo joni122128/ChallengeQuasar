@@ -1,0 +1,5 @@
+package com.operacion.quasar.services;
+
+public class MessageServiceTest {
+
+}

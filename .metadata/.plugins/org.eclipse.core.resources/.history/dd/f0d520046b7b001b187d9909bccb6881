@@ -1,0 +1,72 @@
+package com.operacion.quasar.controllers;
+
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.operacion.quasar.services.LocationService;
+import com.operacion.quasar.services.MessageService;
+
+@RestController
+@RequestMapping("/")
+public class TopSecretController {
+	
+	SatellitesStatuses satellitesStatuses = new SatellitesStatuses();
+	Logger logger = LoggerFactory.getLogger(TopSecretController.class);
+
+	@RequestMapping(value="topsecret", method=RequestMethod.POST)
+	public ResponseEntity<TopSecretResponse> getTopSecret( @RequestBody SateliteRequestDto request) {
+		logger.info("Metodo getTopSecret accedido");
+		TopSecretService _topSecretService = new TopSecretService(new MessageService(), new LocationService());
+    	satellitesStatuses.hydrateSatellitesList(request);
+		
+		try {
+			TopSecretResponse response = _topSecretService.getTopSecretMessage(request);
+			logger.info("Mensaje y distancia obtenida correctamente");
+			return ResponseEntity.ok(response);
+		} catch (ErrorHandler e) {
+			logger.error("Error ejecutando metodo getTopSecretMessage: " + e.getMessage());
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+		}
+    	
+	}
+	
+
+	@RequestMapping(value="topsecret_split/{satelite_name}", method=RequestMethod.POST)
+	public ResponseEntity<TopSecretResponse> getTopSecretBySatelite(@Valid @RequestBody SateliteSplitRequestDto request, @ApiParam (name = "sateliteName", type = "String", value = "Nombre de satelite", example = "Meli", required = true) @PathVariable("satelite_name") String sateliteName) {	
+		logger.info("Metodo getTopSecretBySatelite accedido");
+		TopSecretService _topSecretService = new TopSecretService(new MessageService(), new LocationService());
+    	satellitesStatuses.updateSatellitesList(sateliteName, request.getDistance(), request.getMessage());
+    	
+    	if(satellitesStatuses.validateSateliteName(sateliteName)) {
+    		try {
+    			TopSecretResponse response = _topSecretService.getSplitTopSecretMessage(satellitesStatuses.getSatellites());
+    			logger.info("Mensaje y distancia obtenida correctamente");
+    			return ResponseEntity.ok(response);
+    		} catch (ErrorHandler e) {
+    			logger.error("Error ejecutando metodo getTopSecretBySatelite: " + e.getMessage());
+    			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+    		}
+    	}else {
+			logger.error("Error en flujo, se introdujo un nombre de satelite inexistente o incorrecto");
+    		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nombre de satelite incorrecto");
+    	}
+    	
+	}
+	
+	@RequestMapping(value="topsecret_split", method=RequestMethod.GET)
+	public ResponseEntity<TopSecretResponse> getTopSecretBySatelite() {	
+		logger.info("Metodo getTopSecretBySatelite accedido");
+		TopSecretService _topSecretService = new TopSecretService(new MessageService(), new LocationService());
+	
+    	try {
+			TopSecretResponse response = _topSecretService.getSplitTopSecretMessage(satellitesStatuses.getSatellites());
+			logger.info("Mensaje y distancia obtenida correctamente");
+			return ResponseEntity.ok(response);
+		} catch (ErrorHandler e) {
+			logger.error("Error ejecutando metodo getTopSecretBySatelite: " + e.getMessage());
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+		}
+	}
+}

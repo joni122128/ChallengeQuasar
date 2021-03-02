@@ -1,0 +1,8 @@
+package com.operacion.quasar.interfaces;
+
+public interface ITopSecretService {
+	public TopSecretResponse getTopSecretMessage(SateliteRequestDto satellites) throws ErrorHandler;
+	public TopSecretResponse getSplitTopSecretMessage(List<SateliteDto> satellites);
+	public String getMessage(List<SateliteDto> satellites) throws ErrorHandler;
+	public Position getPosition(List<SateliteDto> satellites) throws ErrorHandler;
+}
