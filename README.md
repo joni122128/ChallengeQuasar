@@ -61,6 +61,13 @@ Posición de los satélites actualmente en servicio:
 ## Nivel 2
 - URL: http://cryptic-saga-286422.rj.r.appspot.com/topsecret_split/{satellite_name}
 - Método: POST
+```
+{
+  "distance": 142.7,
+  "message": ["", "es", "un", "", ""]
+}
+
+```
 
 ## Nivel 3
 - Método: GET
